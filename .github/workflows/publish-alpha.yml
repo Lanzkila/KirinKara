@@ -23,6 +23,7 @@ jobs:
       - name: Download tested APK from green build
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: Lanzkila/KirinKara
         run: |
           gh run download 40217847473 --name KirinKara-debug-apk --dir release
           test -s release/app-debug.apk
@@ -31,6 +32,7 @@ jobs:
       - name: Create GitHub prerelease
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: Lanzkila/KirinKara
         run: |
           if gh release view v0.1.0 >/dev/null 2>&1; then
             echo 'Release v0.1.0 already exists; nothing overwritten.'
