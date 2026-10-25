@@ -79,7 +79,7 @@ class MainActivity : Activity() {
     private fun buildScreen() {
         val rootScroll = ScrollView(this).apply {
             setBackgroundColor(BG)
-            fillViewport = true
+            isFillViewport = true
             isVerticalScrollBarEnabled = false
         }
         val root = LinearLayout(this).apply {
