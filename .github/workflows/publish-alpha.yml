@@ -1,0 +1,43 @@
+name: Publish KirinKara v0.1.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-alpha.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: kirinkara-v0.1.0-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'Lanzkila/KirinKara'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download tested APK from green build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40217847473 --name KirinKara-debug-apk --dir release
+          test -s release/app-debug.apk
+          mv release/app-debug.apk release/KirinKara-v0.1.0-debug.apk
+
+      - name: Create GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0 >/dev/null 2>&1; then
+            echo 'Release v0.1.0 already exists; nothing overwritten.'
+            exit 0
+          fi
+          gh release create v0.1.0 release/KirinKara-v0.1.0-debug.apk \
+            --target "$GITHUB_SHA" \
+            --title 'KirinKara v0.1.0 (Preview)' \
+            --prerelease \
+            --notes 'APK ujian Android 8+. Import lagu pelbagai format, kurangkan vokal stereo secara offline, dengar hasil dan eksport WAV. Ini pengurangan vokal mid/side asas, bukan pemisahan AI; bunyi instrumen tengah juga mungkin berkurang. APK ditandatangani dengan kunci debug untuk ujian, bukan keluaran Play Store.'
